@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import LogoutModal from './modals/LogoutModal';
+import { useDatasetStore } from '@/stores/datasetStore';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -31,11 +32,12 @@ export default function Sidebar() {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  async function handleLogout() {
+  const handleLogout = async () => {
     await api.post('/auth/logout');
+    useDatasetStore.getState().clearDatasets();
     logout();
-    router.push('/');
-  }
+    router.push('/login');
+  };
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 

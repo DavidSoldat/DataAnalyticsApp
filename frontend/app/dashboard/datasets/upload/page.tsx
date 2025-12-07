@@ -1,18 +1,21 @@
 'use client';
-import { uploadDataset } from '@/services/datasetService';
+
+import { datasetService } from '@/services/datasetService';
+import { useDatasetStore } from '@/stores/datasetStore';
 import { AlertCircle, Check, FileSpreadsheet, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 export default function UploadDatasetPage() {
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [error, setError] = useState('');
   const [progress, setProgress] = useState(0);
 
-  const router = useRouter();
+  const { addDataset } = useDatasetStore();
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -46,13 +49,17 @@ export default function UploadDatasetPage() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await uploadDataset(formData, (percent) => {
-        setProgress(percent);
-      });
+      const dataset = await datasetService.uploadDataset(
+        formData,
+        (percent) => {
+          setProgress(percent);
+        }
+      );
 
-      console.log(response);
+      addDataset(dataset);
 
       setUploadComplete(true);
+      console.log(dataset);
 
       setTimeout(() => {
         router.push('/dashboard/datasets');

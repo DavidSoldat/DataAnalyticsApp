@@ -1,5 +1,5 @@
 package com.example.backend.model;
 
-enum ColumnType {
+public enum ColumnType {
     NUMERIC, TEXT, DATE, BOOLEAN
 }

@@ -1,46 +1,36 @@
 'use client';
-import { useState } from 'react';
+import {
+  formatFileSize,
+  formatUploadDate,
+  formatUploadDateTime,
+} from '@/lib/helpers';
+import { useDatasetStore } from '@/stores/datasetStore';
 import {
   BarChart3,
-  Upload,
-  FileText,
   Clock,
-  TrendingUp,
   Database,
+  FileText,
+  TrendingUp,
+  Upload,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function DashboardPage() {
-  const [stats] = useState({
-    totalDatasets: 12,
-    totalRows: 45823,
-    lastUpload: '2 hours ago',
-    storageUsed: '24.5 MB',
-  });
+  const { datasets, fetchDatasets } = useDatasetStore();
 
-  const recentDatasets = [
-    {
-      id: 1,
-      name: 'sales_q4_2024.csv',
-      rows: 5420,
-      uploadedAt: '2 hours ago',
-      status: 'completed',
-    },
-    {
-      id: 2,
-      name: 'customer_survey.xlsx',
-      rows: 892,
-      uploadedAt: '1 day ago',
-      status: 'completed',
-    },
-    {
-      id: 3,
-      name: 'inventory_data.csv',
-      rows: 15603,
-      uploadedAt: '3 days ago',
-      status: 'completed',
-    },
-  ];
+  useEffect(() => {
+    fetchDatasets();
+  }, [fetchDatasets]);
+
+  const stats = {
+    totalDatasets: datasets.length,
+    totalRows: datasets.reduce((sum, d) => sum + (d?.totalRows || 0), 0),
+    lastUpload: datasets[0] ? formatUploadDate(datasets[0].uploadedAt) : 'None',
+    storageUsed: formatFileSize(
+      datasets.reduce((sum, d) => sum + (d?.fileSize || 0), 0)
+    ),
+  };
 
   return (
     <div className='space-y-6 h-full'>
@@ -77,7 +67,7 @@ export default function DashboardPage() {
           </div>
           <p className='text-xs text-blue-600 mt-3 flex items-center gap-1'>
             <TrendingUp className='w-3 h-3' />
-            +3 this week
+            +2 this week
           </p>
         </div>
 
@@ -108,7 +98,7 @@ export default function DashboardPage() {
               <Clock className='w-6 h-6 text-white' />
             </div>
           </div>
-          <p className='text-xs text-purple-600 mt-3'>sales_q4_2024.csv</p>
+          <p className='text-xs text-purple-600 mt-3'>{datasets[0]?.name}</p>
         </div>
 
         <div className='bg-linear-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-5 hover:shadow-lg transition-all'>
@@ -188,7 +178,7 @@ export default function DashboardPage() {
           </Link>
         </div>
         <div className='divide-y divide-gray-200'>
-          {recentDatasets.map((dataset) => (
+          {datasets.map((dataset) => (
             <a
               key={dataset.id}
               href={`/dashboard/datasets/${dataset.id}`}
@@ -203,8 +193,8 @@ export default function DashboardPage() {
                     {dataset.name}
                   </p>
                   <p className='text-sm text-gray-500 mt-0.5'>
-                    {dataset.rows.toLocaleString()} rows • Uploaded{' '}
-                    {dataset.uploadedAt}
+                    {dataset?.totalRows.toLocaleString()} rows • Uploaded{' '}
+                    {formatUploadDateTime(dataset.uploadedAt)}
                   </p>
                 </div>
               </div>

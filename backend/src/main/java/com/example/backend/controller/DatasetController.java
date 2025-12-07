@@ -1,9 +1,12 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.DatasetColumnResponse;
+import com.example.backend.dto.DatasetResponse;
 import com.example.backend.model.CustomUserDetails;
 import com.example.backend.model.Dataset;
+import com.example.backend.model.DatasetColumn;
+import com.example.backend.repository.DatasetColumnRepository;
 import com.example.backend.service.DatasetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +15,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/datasets")
 public class DatasetController {
 
-    @Autowired
-    private DatasetService datasetService;
+    private final DatasetColumnRepository datasetColumnRepository;
+    private final DatasetService datasetService;
+
+    public DatasetController(DatasetColumnRepository datasetColumnRepository, DatasetService datasetService) {
+        this.datasetColumnRepository = datasetColumnRepository;
+        this.datasetService = datasetService;
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadDataset(
@@ -40,7 +49,6 @@ public class DatasetController {
                     .body(Map.of("error", "File size exceeds 50MB limit"));
         }
 
-        // Upload and create dataset
         Dataset dataset = datasetService.uploadAndCreateDataset(file, currentUser.getUserId());
 
         return ResponseEntity.ok(Map.of(
@@ -52,11 +60,16 @@ public class DatasetController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Dataset>> getUserDatasets(
+    public ResponseEntity<List<DatasetResponse>> getUserDatasets(
             @AuthenticationPrincipal CustomUserDetails currentUser
     ) {
         List<Dataset> datasets = datasetService.getUserDatasets(currentUser.getUserId());
-        return ResponseEntity.ok(datasets);
+
+        List<DatasetResponse> response = datasets.stream()
+                .map(DatasetResponse::from)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
@@ -70,7 +83,7 @@ public class DatasetController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(dataset);
+        return ResponseEntity.ok(DatasetResponse.from(dataset));
     }
 
     @GetMapping("/{id}/download")
@@ -112,5 +125,23 @@ public class DatasetController {
         if (filename == null) return false;
         String lower = filename.toLowerCase();
         return lower.endsWith(".csv") || lower.endsWith(".xlsx") || lower.endsWith(".xls");
+    }
+
+    @GetMapping("/{id}/columns")
+    public ResponseEntity<?> getDatasetColumns(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails currentUser
+    ) {
+        Dataset dataset = datasetService.getDatasetByIdAndUserId(id, currentUser.getUserId());
+
+        if (dataset == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<DatasetColumnResponse> columns = dataset.getColumns().stream()
+                .map(DatasetColumnResponse::from)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(columns);
     }
 }

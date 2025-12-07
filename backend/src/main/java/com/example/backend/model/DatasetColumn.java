@@ -1,12 +1,15 @@
 package com.example.backend.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 
 @Entity
+@Data
 @Table(name = "dataset_columns")
 public class DatasetColumn {
 
@@ -16,6 +19,7 @@ public class DatasetColumn {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dataset_id", nullable = false)
+    @JsonIgnore
     private Dataset dataset;
 
     @Column(nullable = false)

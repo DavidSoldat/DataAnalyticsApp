@@ -53,10 +53,12 @@ public class DatasetService {
 
     private final DatasetRepository datasetRepository;
     private final UserRepository userRepository;
+    private final DatasetProcessingService datasetProcessingService;
 
-    public DatasetService(DatasetRepository datasetRepository, UserRepository userRepository) {
+    public DatasetService(DatasetRepository datasetRepository, UserRepository userRepository, DatasetProcessingService datasetProcessingService) {
         this.datasetRepository = datasetRepository;
         this.userRepository = userRepository;
+        this.datasetProcessingService = datasetProcessingService;
     }
 
     @PostConstruct
@@ -248,24 +250,11 @@ public class DatasetService {
 
     /**
      * Process dataset asynchronously (analyze columns, generate stats)
-     * TODO: Implement CSV/Excel parsing and column analysis
      */
     @Async
     public void processDatasetAsync(Long datasetId, MultipartFile file) {
         try {
-            // TODO: Parse CSV/Excel file
-            // TODO: Analyze columns (data types, statistics)
-            // TODO: Save column metadata to database
-            // TODO: Update dataset status to COMPLETED
-
-            // For now, just mark as completed
-            Dataset dataset = datasetRepository.findById(datasetId).orElse(null);
-            if (dataset != null) {
-                dataset.setStatus(DatasetStatus.COMPLETED);
-                dataset.setTotalRows(100); // Placeholder
-                dataset.setTotalColumns(5); // Placeholder
-                datasetRepository.save(dataset);
-            }
+            datasetProcessingService.processDataset(datasetId, file);
         } catch (Exception e) {
             // Mark dataset as failed
             Dataset dataset = datasetRepository.findById(datasetId).orElse(null);
