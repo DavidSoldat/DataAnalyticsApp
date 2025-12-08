@@ -144,4 +144,28 @@ public class DatasetController {
 
         return ResponseEntity.ok(columns);
     }
+
+    @GetMapping("/{id}/preview")
+    public ResponseEntity<?> getDataPreview(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "10") int limit,
+            @AuthenticationPrincipal CustomUserDetails currentUser
+    ) {
+        Dataset dataset = datasetService.getDatasetByIdAndUserId(id, currentUser.getUserId());
+
+        if (dataset == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            List<Map<String, Object>> preview = datasetService.getDataPreview(
+                    dataset.getFilePath(),
+                    limit
+            );
+            return ResponseEntity.ok(preview);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Failed to load data preview"));
+        }
+    }
 }

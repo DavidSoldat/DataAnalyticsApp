@@ -273,6 +273,7 @@ public class DatasetProcessingService {
                 .mapToDouble(Double::doubleValue)
                 .average()
                 .orElse(0.0);
+        mean = Math.round(mean * 100.0) / 100.0; // 2 decimals
         column.setMean(mean);
 
         // Median
@@ -283,19 +284,22 @@ public class DatasetProcessingService {
         } else {
             median = numbers.get(size / 2);
         }
+        median = Math.round(median * 100.0) / 100.0; // 2 decimals
         column.setMedian(median);
 
         // Standard Deviation
+        double finalMean = mean;
         double variance = numbers.stream()
-                .mapToDouble(num -> Math.pow(num - mean, 2))
+                .mapToDouble(num -> Math.pow(num - finalMean, 2))
                 .average()
                 .orElse(0.0);
-        column.setStdDev(Math.sqrt(variance));
+        double stdDev = Math.sqrt(variance);
+        stdDev = Math.round(stdDev * 100.0) / 100.0; // 2 decimals
+        column.setStdDev(stdDev);
     }
-
-    /**
-     * Check if string is numeric
-     */
+        /**
+         * Check if string is numeric
+         */
     private boolean isNumeric(String str) {
         if (str == null || str.trim().isEmpty()) {
             return false;

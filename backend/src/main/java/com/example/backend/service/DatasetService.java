@@ -7,6 +7,12 @@ import com.example.backend.model.User;
 import com.example.backend.repository.DatasetRepository;
 import com.example.backend.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -24,11 +30,13 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.time.Duration;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class DatasetService {
@@ -262,6 +270,112 @@ public class DatasetService {
                 dataset.setStatus(DatasetStatus.FAILED);
                 datasetRepository.save(dataset);
             }
+        }
+    }
+
+    public List<Map<String, Object>> getDataPreview(String filePath, int limit) throws IOException {
+        // Download file from Backblaze
+        byte[] fileBytes = downloadFile(filePath);
+
+        String fileName = filePath.toLowerCase();
+
+        if (fileName.endsWith(".csv")) {
+            return getCSVPreview(fileBytes, limit);
+        } else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+            return getExcelPreview(fileBytes, fileName, limit);
+        }
+
+        throw new RuntimeException("Unsupported file type");
+    }
+
+    /**
+     * Get CSV preview
+     */
+    private List<Map<String, Object>> getCSVPreview(byte[] fileBytes, int limit) throws IOException {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        CSVFormat format = CSVFormat.DEFAULT.builder()
+                .setHeader()
+                .setIgnoreHeaderCase(true)
+                .setTrim(true)
+                .build();
+
+        try (Reader reader = new InputStreamReader(new ByteArrayInputStream(fileBytes));
+             CSVParser csvParser = new CSVParser(reader,format)) {
+
+            List<String> headers = new ArrayList<>(csvParser.getHeaderMap().keySet());
+            int count = 0;
+
+            for (CSVRecord record : csvParser) {
+                if (count >= limit) break;
+
+                Map<String, Object> row = new LinkedHashMap<>();
+                for (String header : headers) {
+                    row.put(header, record.get(header));
+                }
+                result.add(row);
+                count++;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Get Excel preview
+     */
+    private List<Map<String, Object>> getExcelPreview(byte[] fileBytes, String fileName, int limit) throws IOException {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        try (Workbook workbook = fileName.endsWith(".xlsx")
+                ? new XSSFWorkbook(new ByteArrayInputStream(fileBytes))
+                : new HSSFWorkbook(new ByteArrayInputStream(fileBytes))) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            Row headerRow = sheet.getRow(0);
+
+            List<String> headers = new ArrayList<>();
+            for (Cell cell : headerRow) {
+                headers.add(getCellValueAsString(cell));
+            }
+
+            int count = 0;
+            for (int i = 1; i <= sheet.getLastRowNum() && count < limit; i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                Map<String, Object> rowMap = new LinkedHashMap<>();
+                for (int j = 0; j < headers.size(); j++) {
+                    Cell cell = row.getCell(j);
+                    rowMap.put(headers.get(j), cell == null ? "" : getCellValueAsString(cell));
+                }
+                result.add(rowMap);
+                count++;
+            }
+        }
+
+        return result;
+    }
+
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) return "";
+
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                }
+                return String.valueOf(cell.getNumericCellValue());
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            case BLANK:
+                return "";
+            default:
+                return "";
         }
     }
 }

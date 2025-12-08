@@ -26,5 +26,8 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
+
+    // console.error('AXIOS ERROR:', error.response);
+    // return Promise.reject(error);
   }
 );

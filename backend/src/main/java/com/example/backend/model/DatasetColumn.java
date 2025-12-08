@@ -26,11 +26,11 @@ public class DatasetColumn {
     private String columnName;
 
     @Column(nullable = false)
-    private Integer columnIndex;  // Position in the dataset (0, 1, 2...)
+    private Integer columnIndex;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ColumnType dataType;  // NUMERIC, TEXT, DATE, BOOLEAN
+    private ColumnType dataType;
 
     @Column(nullable = false)
     private Integer uniqueValues;
