@@ -15,7 +15,7 @@ export default function UploadDatasetPage() {
   const [error, setError] = useState('');
   const [progress, setProgress] = useState(0);
 
-  const { addDataset } = useDatasetStore();
+  const { addDataset, invalidateCache } = useDatasetStore();
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -61,7 +61,8 @@ export default function UploadDatasetPage() {
       setUploadComplete(true);
       console.log(dataset);
 
-      setTimeout(() => {
+      setTimeout(async () => {
+        invalidateCache();
         router.push('/dashboard/datasets');
       }, 1500);
     } catch (err) {

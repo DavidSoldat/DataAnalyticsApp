@@ -77,51 +77,23 @@ export const datasetService = {
     return response.data;
   },
 
-  // async getDatasetWithColumns(id: number): Promise<{
-  //   dataset: Dataset;
-  //   columns: DatasetColumn[];
-  // }> {
-  //   const [datasetRes, columnsRes] = await Promise.all([
-  //     api.get(`/datasets/${id}`),
-  //     api.get(`/datasets/${id}/columns`),
-  //   ]);
-
-  //   return {
-  //     dataset: datasetRes.data,
-  //     columns: columnsRes.data,
-  //   };
-  // },
-
-  // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // async getDataPreview(id: number, limit: number = 10): Promise<any[]> {
-  //   const response = await api.get(`/datasets/${id}/preview`, {
-  //     params: { limit },
-  //   });
-  //   return response.data;
-  // },
-
   async getDatasetWithColumns(id: number) {
-  const [datasetRes, columnsRes] = await Promise.all([
-    api.get(`/datasets/${id}`),
-    api.get(`/datasets/${id}/columns`)
-  ]);
+    const [datasetRes, columnsRes] = await Promise.all([
+      api.get(`/datasets/${id}`),
+      api.get(`/datasets/${id}/columns`),
+    ]);
 
-  console.log("DATASET RESPONSE:", datasetRes.data);
-  console.log("COLUMNS RESPONSE:", columnsRes.data);
+    return {
+      dataset: datasetRes.data,
+      columns: columnsRes.data,
+    };
+  },
 
-  return {
-    dataset: datasetRes.data,
-    columns: columnsRes.data,
-  };
-},
+  async getDataPreview(id: number, limit = 10) {
+    const response = await api.get(`/datasets/${id}/preview`, {
+      params: { limit },
+    });
 
-async getDataPreview(id: number, limit = 10) {
-  const response = await api.get(`/datasets/${id}/preview`, {
-    params: { limit }
-  });
-
-  console.log("PREVIEW RESPONSE:", response.data);
-
-  return response.data;
-}
+    return response.data;
+  },
 };

@@ -3,6 +3,7 @@
 'use client';
 
 import ConfirmModal from '@/components/modals/ConfirmModal';
+import { formatUploadDate, safeDate, safeTime } from '@/lib/helpers';
 import { Dataset, datasetService } from '@/services/datasetService';
 import { useDatasetStore } from '@/stores/datasetStore';
 import {
@@ -22,8 +23,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function MyDatasetsPage() {
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterBy, setFilterBy] = useState('all'); // all, csv, excel
+  const [filterBy, setFilterBy] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showOptionsMenu, setShowOptionsMenu] = useState<number | null>(null);
@@ -41,51 +43,18 @@ export default function MyDatasetsPage() {
     return mb.toFixed(1) + ' MB';
   };
 
-  const formatUploadDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 60)
-      return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
-    if (diffHours < 24)
-      return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
-    if (diffDays < 30)
-      return `${Math.floor(diffDays / 7)} week${
-        Math.floor(diffDays / 7) !== 1 ? 's' : ''
-      } ago`;
-    return date.toLocaleDateString();
-  };
-
   const sortedDatasets = Array.isArray(datasets)
     ? [...datasets].sort((a, b) => {
         switch (sortBy) {
           case 'recent':
-            return (
-              new Date(b.uploadedAt).getTime() -
-              new Date(a.uploadedAt).getTime()
-            );
+            return safeTime(b.uploadedAt) - safeTime(a.uploadedAt);
           case 'oldest':
-            return (
-              new Date(a.uploadedAt).getTime() -
-              new Date(b.uploadedAt).getTime()
-            );
-          case 'name':
-            return a.name.localeCompare(b.name);
-          case 'size':
-            return b.fileSize - a.fileSize;
-          case 'rows':
-            return b.totalRows - a.totalRows;
+            return safeTime(a.uploadedAt) - safeTime(b.uploadedAt);
           default:
             return 0;
         }
       })
     : [];
-
   const filteredDatasets = sortedDatasets.filter((dataset) => {
     if (!dataset || !dataset.name) return false;
 
@@ -100,23 +69,6 @@ export default function MyDatasetsPage() {
     return matchesSearch && matchesFilter;
   });
 
-  // const handleDelete = async (id: number) => {
-  //   if (!confirm('Are you sure you want to delete this dataset?')) {
-  //     return;
-  //   }
-
-  //   try {
-  //     await datasetService.deleteDataset(id);
-  //     removeDataset(id);
-  //     setShowOptionsMenu(null);
-  //   } catch (err: any) {
-  //     console.error('Failed to delete dataset:', err);
-  //     alert('Failed to delete dataset. Please try again.');
-  //   }
-  // };
-
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-
   const handleDeleteClick = (id: number) => {
     setDeleteId(id); // open modal
   };
@@ -130,7 +82,7 @@ export default function MyDatasetsPage() {
       console.error('Failed to delete dataset:', err);
       alert('Failed to delete dataset. Please try again.');
     } finally {
-      setDeleteId(null); // close modal
+      setDeleteId(null);
     }
   };
 
@@ -238,7 +190,7 @@ export default function MyDatasetsPage() {
               <p className='text-sm text-gray-600'>Last Upload</p>
               <p className='text-lg font-semibold text-gray-900'>
                 {datasets.length > 0
-                  ? formatUploadDate(datasets[0].uploadedAt)
+                  ? safeDate(datasets[0].uploadedAt)
                   : 'None'}
               </p>
             </div>
@@ -540,7 +492,9 @@ export default function MyDatasetsPage() {
                 <div className='flex items-center justify-between text-sm'>
                   <span className='text-gray-600'>Rows</span>
                   <span className='font-medium text-gray-900'>
-                    {dataset.totalRows.toLocaleString()}
+                    {dataset.totalRows
+                      ? dataset.totalRows.toLocaleString()
+                      : '—'}
                   </span>
                 </div>
                 <div className='flex items-center justify-between text-sm'>

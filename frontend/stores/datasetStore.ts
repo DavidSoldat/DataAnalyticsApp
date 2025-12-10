@@ -14,9 +14,10 @@ interface DatasetState {
   removeDataset: (id: number) => void;
   getDatasetById: (id: number) => Dataset | undefined;
   clearDatasets: () => void;
+  invalidateCache: () => void;
 }
 
-const CACHE_DURATION = 5 * 60 * 1000; 
+const CACHE_DURATION = 5 * 60 * 1000;
 
 export const useDatasetStore = create<DatasetState>((set, get) => ({
   datasets: [],
@@ -58,9 +59,14 @@ export const useDatasetStore = create<DatasetState>((set, get) => ({
     }
   },
 
+  invalidateCache: () => {
+    set({ lastFetch: null });
+  },
+
   addDataset: (dataset: Dataset) => {
     set((state) => ({
       datasets: [dataset, ...state.datasets],
+      lastFetch: null,
     }));
   },
 

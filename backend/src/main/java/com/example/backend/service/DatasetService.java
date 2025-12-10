@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -128,13 +129,20 @@ public class DatasetService {
         return presignedRequest.url().toString();
     }
 
-    public void deleteFile(String key) {
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
+    public void deleteFile(String filePath) {
+        String key = filePath.replaceAll("^/+", "");
 
-        s3Client.deleteObject(deleteObjectRequest);
+        try {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            s3Client.deleteObject(deleteObjectRequest);
+
+        } catch (Exception e) {
+            System.out.println("deleteFile() ERROR:");
+        }
     }
 
     public boolean fileExists(String key) {
@@ -249,10 +257,11 @@ public class DatasetService {
      */
     @Transactional
     public void deleteDatasetComplete(Long datasetId, String filePath) {
-        // Delete from Backblaze
-        deleteFile(filePath);
-
-        // Delete from database
+        try {
+            deleteFile(filePath);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete file from storage", e);
+        }
         datasetRepository.deleteById(datasetId);
     }
 

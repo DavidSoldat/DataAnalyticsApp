@@ -118,8 +118,6 @@ public class AuthService {
         return new AuthTokensResponse(user, newAccessToken, null);
     }
 
-
-
     public UserDTO getUserDTOByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -129,4 +127,23 @@ public class AuthService {
     private UserDTO mapToDTO(User user) {
         return new UserDTO(user.getName(), user.getEmail(), user.getRoles());
     }
+
+    public User getById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public void deleteAccount(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public void updatePreferences(Long userId, String datasetPrefsJson, String notificationPrefsJson) {
+        User user = getById(userId);
+
+        user.setDatasetPrefs(datasetPrefsJson);
+        user.setNotificationPrefs(notificationPrefsJson);
+
+        userRepository.save(user);
+    }
+
 }

@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,6 +67,13 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Dataset> datasets = new ArrayList<>();
+
+    @Column(columnDefinition = "json")
+    private String datasetPrefs;
+
+    @Column(columnDefinition = "json")
+    private String notificationPrefs;
+
 }
 
 

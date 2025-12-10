@@ -1,15 +1,18 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.UserDTO;
+import com.example.backend.dto.UserPreferencesRequest;
+import com.example.backend.dto.UserProfileResponse;
+import com.example.backend.model.CustomUserDetails;
+import com.example.backend.model.User;
 import com.example.backend.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -40,5 +43,46 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "User not found"));
         }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileResponse> getProfile(
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        User user = authService.getById(currentUser.getUserId());
+
+        UserProfileResponse response = new UserProfileResponse();
+        response.setId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setName(user.getName());
+
+        response.setDatasetPreferences(user.getDatasetPrefs());
+        response.setNotificationsPreferences(user.getNotificationPrefs());
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PutMapping("/preferences")
+    public ResponseEntity<?> updatePreferences(
+            @RequestBody UserPreferencesRequest prefs,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        authService.updatePreferences(
+                currentUser.getUserId(),
+                prefs.getDatasetPrefsJson(),
+                prefs.getNotificationPrefsJson()
+        );
+
+        return ResponseEntity.ok("Preferences updated.");
+    }
+
+
+    @DeleteMapping("/account")
+    public ResponseEntity<?> deleteAccount(
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        authService.deleteAccount(currentUser.getUserId());
+        return ResponseEntity.ok("Account deleted.");
     }
 }

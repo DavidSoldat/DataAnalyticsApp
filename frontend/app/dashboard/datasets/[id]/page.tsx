@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
 
 import { formatFileSize } from '@/lib/helpers';
@@ -163,7 +162,6 @@ export default function DatasetDetailPage() {
     );
   }
 
-  // Get table headers from first row of preview data
   const tableHeaders =
     dataPreview.length > 0 ? Object.keys(dataPreview[0]) : [];
 
