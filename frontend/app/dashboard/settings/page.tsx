@@ -125,7 +125,6 @@ export default function SettingsPage() {
 
   return (
     <div className='max-w-5xl mx-auto space-y-6'>
-      {/* Header */}
       <div>
         <h1 className='text-3xl font-bold text-gray-900'>Settings</h1>
         <p className='text-gray-600 mt-1'>
@@ -133,7 +132,6 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* Tabs */}
       <div className='bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden'>
         <div className='border-b border-gray-200 overflow-x-auto'>
           <div className='flex min-w-max'>
@@ -157,9 +155,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Tab Content */}
         <div className='p-6'>
-          {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className='space-y-6 max-w-2xl'>
               <div>
@@ -167,7 +163,6 @@ export default function SettingsPage() {
                   Profile Information
                 </h2>
 
-                {/* Profile Picture */}
                 <div className='flex items-center gap-6 mb-6'>
                   <div className='relative'>
                     {userData?.imageUrl ? (
@@ -198,7 +193,6 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                {/* Form */}
                 <div className='space-y-4'>
                   <div>
                     <label className='block text-sm font-medium text-gray-700 mb-2'>
@@ -250,7 +244,6 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {/* Datasets Tab */}
           {activeTab === 'datasets' && (
             <div className='space-y-6 max-w-2xl'>
               <div>
@@ -259,7 +252,6 @@ export default function SettingsPage() {
                 </h2>
 
                 <div className='space-y-6'>
-                  {/* Auto-delete */}
                   <div className='border border-gray-200 rounded-lg p-4'>
                     <div className='flex items-start justify-between'>
                       <div className='flex-1'>
@@ -309,7 +301,6 @@ export default function SettingsPage() {
                     )}
                   </div>
 
-                  {/* Max file size */}
                   <div className='border border-gray-200 rounded-lg p-4'>
                     <h3 className='font-medium text-gray-900 mb-3'>
                       Maximum file size
@@ -335,7 +326,6 @@ export default function SettingsPage() {
                     </p>
                   </div>
 
-                  {/* Default chart type */}
                   <div className='border border-gray-200 rounded-lg p-4'>
                     <h3 className='font-medium text-gray-900 mb-3'>
                       Default chart type
@@ -372,7 +362,6 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {/* Notifications Tab */}
           {activeTab === 'notifications' && (
             <div className='space-y-6 max-w-2xl'>
               <div>
@@ -440,7 +429,6 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {/* Security Tab */}
           {activeTab === 'security' && (
             <div className='space-y-6 max-w-2xl'>
               <div>
@@ -449,7 +437,6 @@ export default function SettingsPage() {
                 </h2>
 
                 <div className='space-y-6'>
-                  {/* Change Password */}
                   {userData?.provider === 'EMAIL' && (
                     <div className='border border-gray-200 rounded-lg p-4'>
                       <h3 className='font-medium text-gray-900 mb-4 flex items-center gap-2'>
@@ -491,7 +478,6 @@ export default function SettingsPage() {
                     </div>
                   )}
 
-                  {/* Connected Accounts */}
                   <div className='border border-gray-200 rounded-lg p-4'>
                     <h3 className='font-medium text-gray-900 mb-4'>
                       Connected Accounts
@@ -516,7 +502,6 @@ export default function SettingsPage() {
                     </div>
                   </div>
 
-                  {/* Delete Account */}
                   <div className='border-2 border-red-200 rounded-lg p-4 bg-red-50'>
                     <h3 className='font-medium text-red-900 mb-2 flex items-center gap-2'>
                       <Trash2 className='w-5 h-5' />

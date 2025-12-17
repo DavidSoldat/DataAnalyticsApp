@@ -88,7 +88,6 @@ public class DatasetService {
     }
 
 
-
     public String uploadFile(MultipartFile file, Long userId, String originalFilename) throws IOException {
         String filename = UUID.randomUUID() + "_" + originalFilename;
         String key = userId + "/" + filename;
@@ -190,11 +189,7 @@ public class DatasetService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
-    // ======================== DATABASE OPERATIONS ========================
 
-    /**
-     * Create new dataset record in database
-     */
     @Transactional
     public Dataset createDataset(Long userId, String originalFilename,
                                  String filePath, Long fileSize, String fileType) {
@@ -216,13 +211,11 @@ public class DatasetService {
 
     @Transactional
     public Dataset uploadAndCreateDataset(MultipartFile file, Long userId) throws IOException {
-        // 1. Upload to Backblaze
+
         String filePath = uploadFile(file, userId, file.getOriginalFilename());
 
-        // 2. Determine file type
         String fileType = file.getOriginalFilename().toLowerCase().endsWith(".csv") ? "CSV" : "EXCEL";
 
-        // 3. Create dataset record
         Dataset dataset = createDataset(
                 userId,
                 file.getOriginalFilename(),
@@ -231,30 +224,21 @@ public class DatasetService {
                 fileType
         );
 
-        // 4. Process dataset asynchronously (TODO: implement CSV/Excel parsing)
         processDatasetAsync(dataset.getId(), file);
 
         return dataset;
     }
 
-    /**
-     * Get dataset by ID and user ID (ensures user owns the dataset)
-     */
     public Dataset getDatasetByIdAndUserId(Long datasetId, Long userId) {
         return datasetRepository.findByIdAndUserId(datasetId, userId)
                 .orElse(null);
     }
 
-    /**
-     * Get all datasets for a user
-     */
-    public List<Dataset> getUserDatasets(Long userId) {
+List<Dataset> getUserDatasets(Long userId) {
         return datasetRepository.findByUserIdOrderByUploadedAtDesc(userId);
     }
 
-    /**
-     * Delete dataset completely (from storage and database)
-     */
+
     @Transactional
     public void deleteDatasetComplete(Long datasetId, String filePath) {
         try {
@@ -265,15 +249,12 @@ public class DatasetService {
         datasetRepository.deleteById(datasetId);
     }
 
-    /**
-     * Process dataset asynchronously (analyze columns, generate stats)
-     */
+
     @Async
     public void processDatasetAsync(Long datasetId, MultipartFile file) {
         try {
             datasetProcessingService.processDataset(datasetId, file);
         } catch (Exception e) {
-            // Mark dataset as failed
             Dataset dataset = datasetRepository.findById(datasetId).orElse(null);
             if (dataset != null) {
                 dataset.setStatus(DatasetStatus.FAILED);
@@ -283,7 +264,7 @@ public class DatasetService {
     }
 
     public List<Map<String, Object>> getDataPreview(String filePath, int limit) throws IOException {
-        // Download file from Backblaze
+
         byte[] fileBytes = downloadFile(filePath);
 
         String fileName = filePath.toLowerCase();
@@ -297,9 +278,6 @@ public class DatasetService {
         throw new RuntimeException("Unsupported file type");
     }
 
-    /**
-     * Get CSV preview
-     */
     private List<Map<String, Object>> getCSVPreview(byte[] fileBytes, int limit) throws IOException {
         List<Map<String, Object>> result = new ArrayList<>();
 
@@ -330,9 +308,6 @@ public class DatasetService {
         return result;
     }
 
-    /**
-     * Get Excel preview
-     */
     private List<Map<String, Object>> getExcelPreview(byte[] fileBytes, String fileName, int limit) throws IOException {
         List<Map<String, Object>> result = new ArrayList<>();
 
@@ -381,8 +356,6 @@ public class DatasetService {
                 return String.valueOf(cell.getBooleanCellValue());
             case FORMULA:
                 return cell.getCellFormula();
-            case BLANK:
-                return "";
             default:
                 return "";
         }

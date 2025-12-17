@@ -90,15 +90,8 @@ export default function DatasetDetailPage() {
     if (!dataset) return;
 
     try {
-      const { downloadUrl, filename } = await datasetService.getDownloadUrl(
-        dataset.id
-      );
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const { downloadUrl } = await datasetService.getDownloadUrl(dataset.id);
+      window.open(downloadUrl, '_blank');
     } catch (err) {
       alert('Failed to download dataset');
       console.log(err);
@@ -167,7 +160,6 @@ export default function DatasetDetailPage() {
 
   return (
     <div className='space-y-6 max-w-7xl mx-auto'>
-      {/* Header */}
       <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
         <div className='flex items-start gap-4'>
           <Link
@@ -216,7 +208,6 @@ export default function DatasetDetailPage() {
         </div>
       </div>
 
-      {/* Quick Stats */}
       <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
         <div className='bg-white border border-gray-200 rounded-lg p-4'>
           <div className='flex items-center gap-2 text-gray-600 text-sm mb-1'>
@@ -256,9 +247,7 @@ export default function DatasetDetailPage() {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className='bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden'>
-        {/* Tab buttons - keep existing */}
         <div className='bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden'>
           <div className='flex border-b border-gray-200'>
             <button
@@ -302,7 +291,6 @@ export default function DatasetDetailPage() {
             </button>
           </div>
 
-          {/* Tab Content */}
           <div className='p-6'>
             {activeTab === 'overview' && (
               <div className='space-y-6'>

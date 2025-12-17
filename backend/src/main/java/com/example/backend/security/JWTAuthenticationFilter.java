@@ -64,11 +64,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = refreshClaims.get("userId", Long.class);
                 List<String> roles = refreshClaims.get("roles", List.class);
 
-                String newAccessToken = tokenGenerator.generateAccessToken(email, userId, roles);
+                String newAccessToken = tokenGenerator.generateAccessToken(email, userId, roles, true);
 
                 Cookie newTokenCookie = new Cookie("token", newAccessToken);
                 newTokenCookie.setHttpOnly(true);
-                newTokenCookie.setSecure(false); // true if using HTTPS
+                newTokenCookie.setSecure(false);
                 newTokenCookie.setPath("/");
                 newTokenCookie.setMaxAge(15 * 60);
                 response.addCookie(newTokenCookie);
@@ -98,7 +98,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 .map(role -> new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role))
                 .collect(Collectors.toSet());
 
-        // Use CustomUserDetails instead of UsernamePasswordAuthenticationToken
         CustomUserDetails userDetails = new CustomUserDetails(email, userId, authorities);
 
         UsernamePasswordAuthenticationToken authenticationToken =

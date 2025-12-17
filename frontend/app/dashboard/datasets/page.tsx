@@ -70,7 +70,7 @@ export default function MyDatasetsPage() {
   });
 
   const handleDeleteClick = (id: number) => {
-    setDeleteId(id); // open modal
+    setDeleteId(id);
   };
 
   const handleConfirmDelete = async () => {
@@ -136,7 +136,6 @@ export default function MyDatasetsPage() {
 
   return (
     <div className='space-y-6'>
-      {/* Header */}
       <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
         <div>
           <h1 className='text-3xl font-bold text-gray-900'>My Datasets</h1>
@@ -153,7 +152,6 @@ export default function MyDatasetsPage() {
         </Link>
       </div>
 
-      {/* Stats Bar */}
       <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
         <div className='bg-white border border-gray-200 rounded-lg p-4'>
           <div className='flex items-center gap-3'>
@@ -190,7 +188,7 @@ export default function MyDatasetsPage() {
               <p className='text-sm text-gray-600'>Last Upload</p>
               <p className='text-lg font-semibold text-gray-900'>
                 {datasets.length > 0
-                  ? safeDate(datasets[0].uploadedAt)
+                  ? formatUploadDate(datasets[0].uploadedAt)
                   : 'None'}
               </p>
             </div>
@@ -200,7 +198,6 @@ export default function MyDatasetsPage() {
 
       <div className='bg-white border border-gray-200 rounded-xl p-4 shadow-sm'>
         <div className='flex flex-col lg:flex-row gap-3'>
-          {/* Search */}
           <div className='flex-1 relative'>
             <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400' />
             <input
@@ -220,7 +217,6 @@ export default function MyDatasetsPage() {
             )}
           </div>
 
-          {/* Filter by Type */}
           <div className='flex gap-2'>
             <button
               onClick={() => setFilterBy('all')}
@@ -254,7 +250,6 @@ export default function MyDatasetsPage() {
             </button>
           </div>
 
-          {/* Sort Dropdown */}
           <div className='relative'>
             <button
               onClick={() => setShowSortMenu(!showSortMenu)}
@@ -349,7 +344,6 @@ export default function MyDatasetsPage() {
           </div>
         </div>
 
-        {/* Active Filters Display */}
         {(searchQuery || filterBy !== 'all' || sortBy !== 'recent') && (
           <div className='flex items-center gap-2 mt-3 pt-3 border-t border-gray-200'>
             <span className='text-sm text-gray-600'>Active filters:</span>
@@ -402,7 +396,6 @@ export default function MyDatasetsPage() {
         )}
       </div>
 
-      {/* Datasets Grid */}
       {filteredDatasets.length > 0 ? (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
           {filteredDatasets.map((dataset) => (
@@ -437,7 +430,6 @@ export default function MyDatasetsPage() {
                   </div>
                 </div>
 
-                {/* Options Menu */}
                 <div className='relative'>
                   <button
                     onClick={(e) => {
@@ -474,7 +466,6 @@ export default function MyDatasetsPage() {
                         </button>
                         <div className='border-t border-gray-200 my-1' />
                         <button
-                          // onClick={() => handleDelete(dataset.id)}
                           onClick={() => handleDeleteClick(dataset.id)}
                           className='w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all'
                         >
@@ -487,7 +478,6 @@ export default function MyDatasetsPage() {
                 </div>
               </div>
 
-              {/* Dataset Stats */}
               <div className='space-y-2 mb-4'>
                 <div className='flex items-center justify-between text-sm'>
                   <span className='text-gray-600'>Rows</span>
@@ -525,7 +515,6 @@ export default function MyDatasetsPage() {
                 </div>
               </div>
 
-              {/* View Button */}
               <Link
                 href={`/dashboard/datasets/${dataset.id}`}
                 className='block w-full text-center px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium rounded-lg transition-all'

@@ -48,7 +48,7 @@ export default function Sidebar() {
           <div className='w-8 h-8 bg-linear-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
             <Database className='w-5 h-5 text-white' />
           </div>
-          <span className='font-bold text-xl text-gray-900'>AnalyticsApp</span>
+          <span className='font-bold text-xl text-gray-900'>Datalytics</span>
         </Link>
 
         <button
@@ -89,9 +89,7 @@ export default function Sidebar() {
             <div className='w-8 h-8 bg-linear-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
               <Database className='w-5 h-5 text-white' />
             </div>
-            <span className='font-bold text-xl text-gray-900'>
-              AnalyticsApp
-            </span>
+            <span className='font-bold text-xl text-gray-900'>Datalytics</span>
           </Link>
         </div>
 
@@ -104,9 +102,7 @@ export default function Sidebar() {
             <div className='w-8 h-8 bg-linear-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
               <Database className='w-5 h-5 text-white' />
             </div>
-            <span className='font-bold text-xl text-gray-900'>
-              AnalyticsApp
-            </span>
+            <span className='font-bold text-xl text-gray-900'>Datalytics</span>
           </Link>
           <button
             onClick={closeMobileMenu}

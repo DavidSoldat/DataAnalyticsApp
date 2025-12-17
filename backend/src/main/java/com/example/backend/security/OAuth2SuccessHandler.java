@@ -58,7 +58,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                             .email(email)
                             .name(username)
                             .provider(AuthProvider.valueOf(oAuth2Token.getAuthorizedClientRegistrationId().toUpperCase()))
-                            .roles(Set.of(Role.ROLE_USER)) // ✅ Updated for enum set
+                            .roles(Set.of(Role.ROLE_USER))
                             .emailVerified(true)
                             .build();
                     return userRepository.save(newUser);
@@ -70,20 +70,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         Long userId = user.getId();
 
-        String accessToken = jwtTokenGenerator.generateAccessToken(email, userId, roles);
+        String accessToken = jwtTokenGenerator.generateAccessToken(email, userId, roles, true);
         String refreshToken = jwtTokenGenerator.generateRefreshToken(email, userId, roles);
 
 
         Cookie accessCookie = new Cookie("token", accessToken);
         accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(false); // ✅ set true in production with HTTPS
+        accessCookie.setSecure(false);
         accessCookie.setPath("/");
         accessCookie.setMaxAge((int) (SecurityConstants.ACCESS_TOKEN_EXPIRATION / 1000));
         response.addCookie(accessCookie);
 
         Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
         refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(false); // ✅ set true in production with HTTPS
+        refreshCookie.setSecure(false);
         refreshCookie.setPath("/");
         refreshCookie.setMaxAge((int) (SecurityConstants.REFRESH_TOKEN_EXPIRATION / 1000));
         response.addCookie(refreshCookie);

@@ -1,4 +1,4 @@
-package com.example.backend.dto;
+package com.example.backend.dto.datasets;
 
 public class DatasetPrefsDTO {
     public boolean autoDelete;

@@ -19,18 +19,18 @@ public class JWTTokenGenerator {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    @Value("${jwt.refresh-expiration:604800000}") // 7 days default
+    @Value("${jwt.refresh-expiration:604800000}")
     private long refreshExpiration;
 
 
-    // Update to accept user ID
-    public String generateAccessToken(String email, Long userId, List<String> roles) {
+    public String generateAccessToken(String email, Long userId, List<String> roles, boolean rememberMe) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpiration);
+        long expiration = rememberMe ? 604800000 : jwtExpiration;
+        Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .setSubject(email)
-                .claim("userId", userId) // Add user ID
+                .claim("userId", userId)
                 .claim("roles", roles)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
@@ -44,7 +44,7 @@ public class JWTTokenGenerator {
 
         return Jwts.builder()
                 .setSubject(email)
-                .claim("userId", userId) // Add user ID
+                .claim("userId", userId)
                 .claim("roles", roles)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)

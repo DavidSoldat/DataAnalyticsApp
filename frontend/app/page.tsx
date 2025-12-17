@@ -21,7 +21,7 @@ export default function LandingPage() {
                 <Database className='w-5 h-5 text-white' />
               </div>
               <span className='text-xl font-bold text-gray-900'>
-                AnalyticsApp
+                Datalytics
               </span>
             </div>
             <div className='hidden md:flex items-center gap-3'>
@@ -445,8 +445,8 @@ export default function LandingPage() {
             Ready to Analyze Your Data?
           </h2>
           <p className='text-xl text-blue-100 mb-8'>
-            Join thousands of users who trust AnalyticsApp for their data
-            analysis needs
+            Join thousands of users who trust Datalytics for their data analysis
+            needs
           </p>
           <div className='flex flex-col sm:flex-row gap-4 justify-center'>
             <Link
@@ -471,12 +471,10 @@ export default function LandingPage() {
               <div className='w-8 h-8 bg-linear-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center'>
                 <Database className='w-5 h-5 text-white' />
               </div>
-              <span className='text-xl font-bold text-white'>AnalyticsApp</span>
+              <span className='text-xl font-bold text-white'>Datalytics</span>
             </div>
             <div className='text-center md:text-right'>
-              <p className='text-sm'>
-                © 2024 AnalyticsApp. All rights reserved.
-              </p>
+              <p className='text-sm'>© 2024 Datalytics. All rights reserved.</p>
               <p className='text-sm mt-1'>Made with ❤️ for data enthusiasts</p>
             </div>
           </div>

@@ -9,16 +9,13 @@ export default async function proxy(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
   const token = req.cookies.get('token')?.value;
+  const refreshToken = req.cookies.get('refreshToken')?.value;
 
-  if (isProtectedRoute && !token) {
+  if (isProtectedRoute && !token && !refreshToken) {
     return NextResponse.redirect(new URL('/login', req.nextUrl));
   }
 
-  if (
-    isPublicRoute &&
-    token &&
-    !req.nextUrl.pathname.startsWith('/dashboard')
-  ) {
+  if (isPublicRoute && token && path !== '/dashboard') {
     return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
   }
 

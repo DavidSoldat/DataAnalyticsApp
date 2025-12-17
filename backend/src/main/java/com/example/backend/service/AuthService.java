@@ -1,9 +1,9 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.AuthTokensResponse;
-import com.example.backend.dto.LoginRequest;
-import com.example.backend.dto.RegisterRequest;
-import com.example.backend.dto.UserDTO;
+import com.example.backend.dto.auth.AuthTokensResponse;
+import com.example.backend.dto.auth.LoginRequest;
+import com.example.backend.dto.auth.RegisterRequest;
+import com.example.backend.dto.auth.UserDTO;
 import com.example.backend.model.AuthProvider;
 import com.example.backend.model.Role;
 import com.example.backend.model.User;
@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +57,7 @@ public class AuthService {
 
         Long userId = user.getId();
 
-        String accessToken = jwtTokenGenerator.generateAccessToken(user.getEmail(), userId, roles);
+        String accessToken = jwtTokenGenerator.generateAccessToken(user.getEmail(), userId, roles, false);
         String refreshToken = jwtTokenGenerator.generateRefreshToken(user.getEmail(), userId, roles);
 
         return new AuthTokensResponse(mapToDTO(user), accessToken, refreshToken);
@@ -74,9 +75,10 @@ public class AuthService {
                 .map(Role::name)
                 .toList();
 
+        boolean rememberMe = request.isRememberMe();
         Long userId = user.getId();
 
-        String accessToken = jwtTokenGenerator.generateAccessToken(user.getEmail(), userId, roles);
+        String accessToken = jwtTokenGenerator.generateAccessToken(user.getEmail(), userId, roles, rememberMe);
         String refreshToken = null;
         if (request.isRememberMe()) {
             refreshToken = jwtTokenGenerator.generateRefreshToken(user.getEmail(), userId, roles);
@@ -111,7 +113,12 @@ public class AuthService {
         @SuppressWarnings("unchecked")
         List<String> roles = claims.get("roles", List.class);
 
-        String newAccessToken = jwtTokenGenerator.generateAccessToken(email, userId, roles);
+        Date expiration = claims.getExpiration();
+        Date now = new Date();
+        long timeToExpiry = expiration.getTime() - now.getTime();
+        boolean wasRememberMe = timeToExpiry > 3600000;
+
+        String newAccessToken = jwtTokenGenerator.generateAccessToken(email, userId, roles, wasRememberMe);
 
         UserDTO user = getUserDTOByEmail(email);
 

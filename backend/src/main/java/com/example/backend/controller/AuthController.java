@@ -1,9 +1,9 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.AuthResponse;
-import com.example.backend.dto.AuthTokensResponse;
-import com.example.backend.dto.LoginRequest;
-import com.example.backend.dto.RegisterRequest;
+import com.example.backend.dto.auth.AuthResponse;
+import com.example.backend.dto.auth.AuthTokensResponse;
+import com.example.backend.dto.auth.LoginRequest;
+import com.example.backend.dto.auth.RegisterRequest;
 import com.example.backend.security.SecurityConstants;
 import com.example.backend.service.AuthService;
 import jakarta.servlet.http.Cookie;
@@ -32,14 +32,14 @@ public class AuthController {
 
         Cookie accessCookie = new Cookie("token", tokensResponse.getAccessToken());
         accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(false); // production: true
+        accessCookie.setSecure(false);
         accessCookie.setPath("/");
         accessCookie.setMaxAge((int) (SecurityConstants.ACCESS_TOKEN_EXPIRATION / 1000));
         response.addCookie(accessCookie);
 
         Cookie refreshCookie = new Cookie("refreshToken", tokensResponse.getRefreshToken());
         refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(false); // production: true
+        refreshCookie.setSecure(false);
         refreshCookie.setPath("/");
         refreshCookie.setMaxAge((int) (SecurityConstants.REFRESH_TOKEN_EXPIRATION / 1000));
         response.addCookie(refreshCookie);
@@ -53,7 +53,7 @@ public class AuthController {
 
         Cookie accessCookie = new Cookie("token", tokensResponse.getAccessToken());
         accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(false); // production: true
+        accessCookie.setSecure(false);
         accessCookie.setPath("/");
         accessCookie.setMaxAge((int) (SecurityConstants.ACCESS_TOKEN_EXPIRATION / 1000));
         response.addCookie(accessCookie);
@@ -61,7 +61,7 @@ public class AuthController {
         if (tokensResponse.getRefreshToken() != null) {
             Cookie refreshCookie = new Cookie("refreshToken", tokensResponse.getRefreshToken());
             refreshCookie.setHttpOnly(true);
-            refreshCookie.setSecure(false); // production: true
+            refreshCookie.setSecure(false);
             refreshCookie.setPath("/");
             refreshCookie.setMaxAge((int) (SecurityConstants.REFRESH_TOKEN_EXPIRATION / 1000));
             response.addCookie(refreshCookie);
@@ -116,7 +116,7 @@ public class AuthController {
 
             Cookie accessCookie = new Cookie("token", tokensResponse.getAccessToken());
             accessCookie.setHttpOnly(true);
-            accessCookie.setSecure(false); // set to true in production (HTTPS)
+            accessCookie.setSecure(false);
             accessCookie.setPath("/");
             accessCookie.setMaxAge((int) (SecurityConstants.ACCESS_TOKEN_EXPIRATION / 1000));
             response.addCookie(accessCookie);

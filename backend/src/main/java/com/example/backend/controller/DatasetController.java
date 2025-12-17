@@ -1,10 +1,9 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.DatasetColumnResponse;
-import com.example.backend.dto.DatasetResponse;
+import com.example.backend.dto.datasets.DatasetColumnResponse;
+import com.example.backend.dto.datasets.DatasetResponse;
 import com.example.backend.model.CustomUserDetails;
 import com.example.backend.model.Dataset;
-import com.example.backend.model.DatasetColumn;
 import com.example.backend.repository.DatasetColumnRepository;
 import com.example.backend.service.DatasetService;
 import org.springframework.http.ResponseEntity;

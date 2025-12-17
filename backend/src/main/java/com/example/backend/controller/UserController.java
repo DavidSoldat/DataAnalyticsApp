@@ -1,8 +1,8 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.UserDTO;
-import com.example.backend.dto.UserPreferencesRequest;
-import com.example.backend.dto.UserProfileResponse;
+import com.example.backend.dto.auth.UserDTO;
+import com.example.backend.dto.datasets.UserPreferencesRequest;
+import com.example.backend.dto.datasets.UserProfileResponse;
 import com.example.backend.model.CustomUserDetails;
 import com.example.backend.model.User;
 import com.example.backend.service.AuthService;
