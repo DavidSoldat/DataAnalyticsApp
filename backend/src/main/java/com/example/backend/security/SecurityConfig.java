@@ -44,7 +44,6 @@ public class SecurityConfig {
                         .oauth2Login(oauth2 -> oauth2
                                 .loginPage("/api/auth/loginGoogle")
                                 .authorizationEndpoint(auth -> auth.baseUri("/api/auth/oauth2/authorization"))
-                                .redirectionEndpoint(redir -> redir.baseUri("/api/auth/oauth2/code/**"))
                                 .successHandler(oauth2SuccessHandler)
                         )
                                 .httpBasic(Customizer.withDefaults());

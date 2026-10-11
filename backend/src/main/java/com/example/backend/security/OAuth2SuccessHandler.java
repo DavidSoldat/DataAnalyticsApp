@@ -88,6 +88,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshCookie.setMaxAge((int) (SecurityConstants.REFRESH_TOKEN_EXPIRATION / 1000));
         response.addCookie(refreshCookie);
 
-        getRedirectStrategy().sendRedirect(request, response, "http://localhost:5173/oauth-callback");
+        getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000/dashboard");
     }
 }

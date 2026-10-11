@@ -16,8 +16,7 @@ export default function LogOutButton() {
   return (
     <button
       onClick={logOut}
-      className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition mt-auto
-                ${isActive ? 'bg-gray-200 font-medium' : 'hover:bg-gray-100'}`}
+      className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition mt-auto hover:bg-gray-100`}
     >
       Log Out
     </button>
